@@ -53,7 +53,7 @@ const renderMatrix = (canvas, columns, fontSize) => {
       if (drop) {
         context.fillStyle = drop.color;
         
-        context.fillRect(i * fontSize, drop.y * fontSize, fontSize, fontSize * 3);
+        context.fillRect(i * fontSize, drop.y * fontSize, fontSize, fontSize * 2);
 
         if (drop.y * fontSize > canvas.height && Math.random() > 0.975) {
           drop.y = -3; 

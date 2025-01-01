@@ -1,10 +1,11 @@
+import React from "react";
+import GameUI from "./components/ui";
+import "./App.css";
 
-import './App.css';
-import MatrixRainingLetters from './components/rain';
 function App() {
   return (
-    <div className="App">
-      <MatrixRainingLetters/>
+    <div className="app">
+      <GameUI />
     </div>
   );
 }

@@ -1,0 +1,144 @@
+/* Base reset */
+body, html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Press Start 2P", serif;
+    background: radial-gradient(circle, #001f3f, #011627 60%, #000000);
+    color: #ffffff;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  /* Game UI layout */
+  .game-ui {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    color: #040404; /* Neon green for the text */
+  }
+  
+  /* Header */
+  .game-header {
+    text-align: center;
+    padding: 1.1rem;
+    background: linear-gradient(90deg, #001f3f, #39ff14, #001f3f);
+    font-size: 1rem;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px #39ff14, 0 0 20px #39ff14;
+    animation: flicker 1.5s infinite alternate;
+  }
+  
+  /* Canvas container */
+  .game-content {
+    flex: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Matrix canvas styling */
+  .mrc-container {
+    width: 100%;
+    height: 100%;
+    max-width: 100vw;
+    max-height: 100vh;
+  }
+  
+  /* Game control panel */
+  .game-panel {
+    position: absolute;
+    bottom: 20px;
+    display: flex;
+    gap: 20px;
+    z-index: 10;
+  }
+  
+  /* Neon button styles */
+  .neon-button {
+    background: #111111;
+    color: #00ff9c;
+    font-family: "Press Start 2P", serif;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border: 2px solid #00ff9c;
+    border-radius: 5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 10px #00ff9c, 0 0 20px #00ff9c;
+  }
+  
+  .neon-button:hover {
+    background: #00ff9c;
+    color: #111111;
+    box-shadow: 0 0 20px #39ff14, 0 0 40px #39ff14;
+  }
+  
+  .neon-button:active {
+    box-shadow: 0 0 5px #39ff14;
+    transform: translateY(2px);
+  }
+  
+  /* Footer */
+  .game-footer {
+    text-align: center;
+    padding: 0.8rem;
+    background: #001f3f;
+    font-size: 1.3rem;
+    font-family: "Press Start 2P", serif;
+    font-weight: bolder;
+    text-shadow: 0 0 5px #00ff9c;
+    border-top: 2px solid #39ff14;
+  }
+  
+  /* Flickering effect */
+  @keyframes flicker {
+    0% {
+      opacity: 0.6;
+      text-shadow: 0 0 5px #39ff14, 0 0 10px #39ff14;
+    }
+    50% {
+      opacity: 1;
+      text-shadow: 0 0 15px #39ff14, 0 0 30px #39ff14;
+    }
+    100% {
+      opacity: 0.8;
+      text-shadow: 0 0 10px #39ff14, 0 0 20px #39ff14;
+    }
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .game-header {
+      font-size: 1.5rem;
+    }
+  
+    .neon-button {
+      font-size: 0.9rem;
+      padding: 8px 16px;
+    }
+  
+    .game-footer {
+      font-size: 0.8rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .game-header {
+      font-size: 1.2rem;
+    }
+  
+    .neon-button {
+      font-size: 0.8rem;
+      padding: 6px 12px;
+    }
+  
+    .game-footer {
+      font-size: 0.7rem;
+    }
+  }
+  
