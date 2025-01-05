@@ -1,120 +1,121 @@
 import React, { useRef, useEffect, useState } from "react";
 import "./styles.css";
 
-const renderMatrix = (canvas, columns, fontSize) => {
-  const context = canvas.getContext("2d");
-
-  // Function to generate a random color
-  const generateRandomColor = () => {
-    const r = Math.floor(Math.random() * 256);
-    const g = Math.floor(Math.random() * 256);
-    const b = Math.floor(Math.random() * 256);
-    return `rgb(${r},${g},${b})`;
-  };
-
-  const rainDrops = [];
-
-  // Initialize only a fraction of the columns (randomly picking some columns to have rain drops)
-  for (let x = 0; x < columns; x++) {
-    if (Math.random() > 0.7) {
-      rainDrops[x] = { y: -3, color: generateRandomColor() };
-    } else {
-      rainDrops[x] = null;
-    }
-  }
-
-  const render = () => {
-    context.fillStyle = "rgba(0, 0, 0, 0.05)";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Draw grid lines
-    context.strokeStyle = "#7a7a7a80";
-    context.lineWidth = 0.5;
-
-    // Vertical lines
-    for (let x = 0; x < columns; x++) {
-      context.beginPath();
-      context.moveTo(x * fontSize, 0);
-      context.lineTo(x * fontSize, canvas.height);
-      context.stroke();
-    }
-
-    // Horizontal lines
-    const rows = Math.floor(canvas.height / fontSize);
-    for (let y = 0; y < rows; y++) {
-      context.beginPath();
-      context.moveTo(0, y * fontSize);
-      context.lineTo(canvas.width, y * fontSize);
-      context.stroke();
-    }
-
-    for (let i = 0; i < rainDrops.length; i++) {
-      const drop = rainDrops[i];
-      if (drop) {
-        context.fillStyle = drop.color;
-        
-        context.fillRect(i * fontSize, drop.y * fontSize, fontSize, fontSize * 2);
-
-        if (drop.y * fontSize > canvas.height && Math.random() > 0.975) {
-          drop.y = -3; 
-          drop.color = generateRandomColor(); 
-        }
-
-        drop.y++;
-      }
-    }
-  };
-
-  return render;
-};
-
-
 const MatrixRainingColor = (props) => {
   const ref = useRef();
+  const rainDropsRef = useRef([]);
   const [dimensions, setDimensions] = useState({ columns: 0, rows: 0 });
-  const fontSize = 50;
+  const [currentColor, setCurrentColor] = useState("rgb(255, 0, 0)");
+  const fontSize = 66;
 
   useEffect(() => {
-  
     const canvas = ref.current;
+
     const updateDimensions = () => {
-      const columns = Math.floor(canvas.width / fontSize);  // number of columns based on canvas width
-      const rows = Math.floor(canvas.height / fontSize);    // number of rows based on canvas height
+      const columns = Math.floor(canvas.width / fontSize);
+      const rows = Math.floor(canvas.height / fontSize);
       setDimensions({ columns, rows });
+
+      // Calculate the max number of raindrops based on the total grid cells
+      const maxDrops = Math.floor(columns * rows * 0.025); // 2.5% of the total grid cells
+
+      // Initialize raindrops with random columns
+      rainDropsRef.current = Array.from({ length: maxDrops }, () => ({
+        x: Math.floor(Math.random() * columns), // Random column
+        y: Math.floor(Math.random() * -rows),  // Random starting position above the screen
+      }));
     };
 
+    // Set initial canvas size and dimensions
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
     updateDimensions();
 
-    // Add resize listener to update grid on window resize
-    window.addEventListener("resize", () => {
+    const handleResize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       updateDimensions();
-    });
+    };
 
-    // Cleanup on unmount
+    window.addEventListener("resize", handleResize);
+
     return () => {
-      window.removeEventListener("resize", () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      });
+      window.removeEventListener("resize", handleResize);
     };
   }, [fontSize]);
 
-  const { columns } = dimensions;
+  // Change color dynamically
+  useEffect(() => {
+    const changeColor = () => {
+      const r = Math.floor(Math.random() * 256);
+      const g = Math.floor(Math.random() * 256);
+      const b = Math.floor(Math.random() * 256);
+      setCurrentColor(`rgb(${r},${g},${b})`);
+    };
+
+    const intervalId = setInterval(changeColor, 2000); // Change color every 2 seconds
+    return () => clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
-    const render = renderMatrix(ref.current, columns, fontSize);
-    const intervalId = setInterval(render, 30);
+    const canvas = ref.current;
+    const context = canvas.getContext("2d");
+
+    const render = () => {
+      // Clear the canvas with a slight fade for trailing effect
+      context.fillStyle = "rgba(0, 0, 0, 0.18)";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw grid lines
+      context.strokeStyle = "rgba(200, 200, 200, 0.5)";
+      context.lineWidth = 0.5;
+
+      for (let x = 0; x < canvas.width; x += fontSize) {
+        context.beginPath();
+        context.moveTo(x, 0);
+        context.lineTo(x, canvas.height);
+        context.stroke();
+      }
+
+      for (let y = 0; y < canvas.height; y += fontSize) {
+        context.beginPath();
+        context.moveTo(0, y);
+        context.lineTo(canvas.width, y);
+        context.stroke();
+      }
+
+      // Draw raindrops
+      rainDropsRef.current.forEach((drop) => {
+        context.fillStyle = currentColor;
+        context.fillRect(
+          drop.x * fontSize,
+          drop.y * fontSize,
+          fontSize,
+          fontSize
+        );
+
+        // Move the drop down and reset if it goes off-screen
+        if (drop.y * fontSize >= canvas.height) {
+          // Reset y to start above the screen, and randomize x
+          drop.y = Math.floor(Math.random() * -10); // Random position above the screen
+          drop.x = Math.floor(Math.random() * dimensions.columns); // Random column
+        } else {
+          drop.y += 1; // Move down
+        }
+      });
+    };
+
+    const intervalId = setInterval(render, 35); // Continuously render every 35ms
     return () => clearInterval(intervalId);
-  }, [columns, fontSize]);
+  }, [dimensions, fontSize, currentColor]);
 
   return (
     <React.Fragment>
-      <canvas key={`mrc-${props.key}`} className={`mrc-container ${props.custom_class}`} ref={ref} />
+      <canvas
+        key={`mrc-${props.key}`}
+        className={`mrc-container ${props.custom_class}`}
+        ref={ref}
+      />
     </React.Fragment>
   );
 };

@@ -6,7 +6,7 @@ const GameUI = () => {
   return (
     <div className="game-ui">
       <header className="game-header">
-        <h1>⚡ Matrix Color Rain ⚡</h1>
+        <h1>Color Rain </h1>
       </header>
       <main className="game-content">
         <MatrixRainingColor />
@@ -17,7 +17,7 @@ const GameUI = () => {
         </div>
       </main>
       <footer className="game-footer">
-        <p>Designed for an Immersive Experience ✨</p>
+        <p>Designed for an Immersive Experience</p>
       </footer>
     </div>
   );
